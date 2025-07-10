@@ -21,4 +21,12 @@ export class TasksService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async getTaskById(id: number) {
+    return this.prisma.task.findUnique({
+      where: { id },
+      include: { feedbacks: true },
+    });
+  }
+  
 }
