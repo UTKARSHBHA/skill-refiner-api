@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Task {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String     // Input content from the user (e.g., resume)
+  userEmail   String     // Optional for now (we'll use it for basic auth/tracking)
+  feedbacks   Feedback[] // One-to-many relation
+  createdAt   DateTime   @default(now())
+}
+
+model Feedback {
+  id        Int      @id @default(autoincrement())
+  taskId    Int
+  content   String   // Response from OpenAI
+  task      Task     @relation(fields: [taskId], references: [id])
+  createdAt DateTime @default(now())
+}
