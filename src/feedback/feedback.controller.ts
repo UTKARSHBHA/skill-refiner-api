@@ -10,8 +10,8 @@ export class FeedbackController {
     return this.feedbackService.generateFeedback(taskId);
   }
 
-  // @Get(':taskId')
-  // getAll(@Param('taskId', ParseIntPipe) taskId: number) {
-  //   return this.feedbackService.getFeedbackByTask(taskId);
-  // }
+  @Post(':taskId/retry')
+  async retryFeedback(@Param('taskId', ParseIntPipe) taskId: number) {
+    return this.feedbackService.generateFeedback(taskId);
+  }
 }

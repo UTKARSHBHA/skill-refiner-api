@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import OpenAI from 'openai';
 
@@ -20,33 +20,33 @@ export class FeedbackService {
     const task = await this.prisma.task.findUnique({
       where: { id: taskId },
     });
-
+  
     if (!task) throw new NotFoundException('Task not found');
-
+  
     const prompt = `You are an expert resume coach. Provide specific feedback on this resume content:\n\n"${task.content}"`;
-
+  
     const completion = await this.openai.chat.completions.create({
       model: 'meta-llama/llama-3.3-70b-instruct:free',
       messages: [{ role: 'user', content: prompt }],
     });
-
+  
     const aiContent = completion.choices[0].message?.content?.trim();
-
+  
     if (!aiContent) {
-      throw new Error('AI returned no content');
+      throw new InternalServerErrorException('AI returned no feedback. Please try again.');
     }
-
-    // ✅ Save new feedback in Feedback table
+  
     const savedFeedback = await this.prisma.feedback.create({
       data: {
         content: aiContent,
         task: { connect: { id: taskId } },
       },
     });
-
+  
     return {
       message: 'Feedback generated and saved',
       feedback: savedFeedback,
     };
   }
+  
 }
