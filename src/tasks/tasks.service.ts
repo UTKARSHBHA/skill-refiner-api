@@ -28,5 +28,9 @@ export class TasksService {
       include: { feedbacks: true },
     });
   }
+
+  async createTask(data: { title: string; content: string; userEmail: string }) {
+    return this.prisma.task.create({ data });
+  }
   
 }
